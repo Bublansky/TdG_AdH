@@ -11,19 +11,26 @@ class Main
         dicionario = entrada.nextLine();
         char letra;
         int quantidade;
+        
         //System.out.println(dicionario);
         
         
-        dicionario = dicionario.replace("{", "");   // remove abertura de chaves
+        dicionario = dicionario.replace("{", " ");   // remove abertura de chaves
         dicionario = dicionario.replace("}", "");   // remove fechamento de chaves
+        
         //System.out.println(dicionario);
         
         String[] values = dicionario.split(",");    // divide o dicionario por vírgulas
         
         for (String value : values) // para cada letra e sua quantidade
         {
-            letra = 
-            No no = new No();
+            letra = value.charAt(2);
+            quantidade = Integer.valueOf(value.substring(6));
+            
+            No no = new No(letra, quantidade);  //cria um novo no
+            System.out.println("<--" + letra + "," + quantidade + "-->");
+            
+            
         }
         
     }
