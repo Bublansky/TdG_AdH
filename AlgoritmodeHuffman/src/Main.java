@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import  java.util.Scanner;
 class Main
 {
@@ -28,13 +30,39 @@ class Main
             quantidade = Integer.valueOf(value.substring(6));
             
             No no = new No(letra, quantidade);  //cria um novo no
-            System.out.println("<--" + letra + "," + quantidade + "-->");
+            //System.out.println("<--" + letra + "," + quantidade + "-->");
             
-            
+            Nos.add(no);
         }
-        
+        Nos.sort(new Comparator<No>()   // ordenando as letras de modo decrescente
+        {
+            @Override
+            public int compare(No o1, No o2)
+            {
+                return (o1.quantidade > o2.quantidade)? 1 : 0;
+            } 
+        });
+        for(No no : Nos)
+        {
+            //System.out.println(no.letra+","+no.quantidade);
+        }
     }
     
+    private static class FilaPrioridadeMinima
+    {
+        No[] nos; 
+        int tamanho;
+        public FilaPrioridadeMinima(int quantidade)
+        {
+            tamanho = 0;
+            nos = new No[tamanho];
+        }
+        
+        private int Pai(int i)
+        {
+            
+        }
+    }
     private static class No
     {
         private char letra;
@@ -44,90 +72,6 @@ class Main
         {
             this.letra = letra;
             this.quantidade = quantidade;
-        }
-    }
-    
-    private static class Grafo
-    {
-        private int adj[][];
-        private int vertices = 0;
-        private int distancia[];
-
-        public Grafo(int quantidade)
-        {
-            vertices = quantidade;
-            adj = new int [quantidade][quantidade];
-            distancia = new int[quantidade];
-        }
-        public int getAresta(int origem, int destino)
-        {
-            return adj[origem][destino];
-        }
-        public void AddAresta(int linha, int coluna, int value)
-        {
-            adj[linha][coluna] = value;
-        }
-        public void BellmanFord(int origem)
-        {
-            int v, i, u, peso;
-            //passo 1:
-            for(v = 0 ; v < vertices ; v++)
-            {
-                distancia[v] = Integer.MAX_VALUE;
-            }
-            distancia[origem] = 0;
-            //passo 2:
-            for(i = 0 ; i < vertices - 1; i++)
-            {
-                for(u = 0 ; u < vertices ; u++)
-                {
-                    for(v = 0 ; v < vertices ; v++)
-                    {
-                        peso = getAresta(u, v);
-                        if(peso != 0)
-                        {    
-                            if(distancia[u] != Integer.MAX_VALUE)
-                            {
-                                if(distancia[u] + peso < distancia[v])
-                                {
-                                    distancia[v] = distancia[u] + peso;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            //passo 3:
-            for(u = 0 ; u < vertices ; u++)
-            {
-                for(v = 0 ; v < vertices ; v++)
-                {
-                    if(distancia[u] != Integer.MAX_VALUE)
-                    {
-                        peso = getAresta(u, v);
-                        //se ha uma aresta uv
-                        if(peso != 0)
-                        {
-                            if(distancia[u] + peso < distancia[v])
-                            {
-                                System.out.print("ciclo negativo");
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-            for(i = 0 ; i < vertices ; i++)
-            {
-                if(distancia[i] == Integer.MAX_VALUE)
-                {
-                    System.out.print("i ");
-                }
-                else
-                {
-                    System.out.print(distancia[i] + " ");
-                }
-            }
         }
     }
 }
