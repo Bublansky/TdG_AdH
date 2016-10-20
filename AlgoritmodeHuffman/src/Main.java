@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import  java.util.Scanner;
 class Main
 {
@@ -6,15 +7,25 @@ class Main
     public static void main(String[] args)
     {
         String dicionario;
-        No[] letras;
+        ArrayList<No> Nos = new ArrayList();
         dicionario = entrada.nextLine();
-        System.out.println(dicionario);
+        char letra;
+        int quantidade;
+        //System.out.println(dicionario);
         
-        //percorrendo o dicionario sem as chaves e pulando para cada letra
-        for(int i = 1 ; i < dicionario.length() - 1 ; i+=8)
+        
+        dicionario = dicionario.replace("{", "");   // remove abertura de chaves
+        dicionario = dicionario.replace("}", "");   // remove fechamento de chaves
+        //System.out.println(dicionario);
+        
+        String[] values = dicionario.split(",");    // divide o dicionario por vírgulas
+        
+        for (String value : values) // para cada letra e sua quantidade
         {
-            
+            letra = 
+            No no = new No();
         }
+        
     }
     
     private static class No
@@ -22,7 +33,7 @@ class Main
         private char letra;
         private int quantidade;
         
-        public void setValues(char letra, int quantidade)
+        public No(char letra, int quantidade)
         {
             this.letra = letra;
             this.quantidade = quantidade;
