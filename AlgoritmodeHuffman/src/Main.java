@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import  java.util.Scanner;
 class Main
@@ -23,29 +22,59 @@ class Main
             quantidade = Integer.valueOf(value.substring(6));
             No no = new No(letra, quantidade);  //cria um novo no
             //System.out.println("<--" + letra + "," + quantidade + "-->");
-            Nos.add(no);
+            Nos.add(no);    //inserindo o no na lista de nos
         }
-        Nos.sort(new Comparator<No>()   //ordenando as letras de modo decrescente
+        //Nos.sort((No o1, No o2) -> (o1.quantidade > o2.quantidade)? 1 : 0); //ordenando as letras de modo decrescente
+        FilaPrioridadeMinima fila = new FilaPrioridadeMinima(Nos.size());   //criacao da fila de prioridade 
+        Nos.stream().forEach((no) ->    //inserir cada no na fila
         {
-            @Override
-            public int compare(No o1, No o2)
-            {
-                return (o1.quantidade > o2.quantidade)? 1 : 0;
-            } 
-        });
-        for(No no : Nos)
+            fila.Inserir(no);   //inserindo o no
+        }); //depois de inserir cada no na fila de prioridades
+        while(fila.getQuantidade() > 1)
         {
-            //System.out.println(no.letra+","+no.quantidade);
+            No no1 = fila.ExtrairMinimo();  //retira o primeiro menor
+            No no2 = fila.ExtrairMinimo();  //retira o segundo menor
+            
         }
     }
     private static class FilaPrioridadeMinima
     {
-        No[] nos; 
-        int tamanho;
+        private No[] nos; 
+        private int tamanho;
         public FilaPrioridadeMinima(int quantidade)
         {
             tamanho = 0;
             nos = new No[quantidade+1];
+        }
+        public int getQuantidade()
+        {
+            return this.tamanho;
+        }
+        public No ExtrairMinimo()
+        {
+            No menor = nos[1];
+            nos[1] = nos[tamanho];  //substitui a raiz pelo ultimo elemento
+            int i = 1;
+            tamanho--;
+            while(nos[i].quantidade > nos[Esq(i)].quantidade || 
+                    nos[i].quantidade > nos[Dir(i)].quantidade) //enquanto o pai for maior que os filhos
+            {
+                if(nos[Esq(i)].quantidade < nos[Dir(i)].quantidade)    //se o filho da esquerda for o menor
+                {
+                    No aux = nos[Esq(i)];
+                    nos[Esq(i)] = nos[i];   //troca o filho da esquerda pelo pai
+                    nos[i] = aux;   //troca o pai pelo filho da esquerda
+                    i = Esq(i);
+                }
+                else    //se o da esquerda nao for o menor
+                {
+                    No aux = nos[Dir(i)];
+                    nos[Dir(i)] = nos[i];   //troca o filho da direita pelo pai
+                    nos[i] = aux;   //troca o pai pelo filho da direita
+                    i = Dir(i);
+                }
+            }
+            return menor;
         }
         public void Inserir(No no)
         {
