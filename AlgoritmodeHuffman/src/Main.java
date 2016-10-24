@@ -5,7 +5,6 @@ import  java.util.Scanner;
 class Main
 {
     private static Scanner entrada = new Scanner(System.in);
-    
     public static void main(String[] args)
     {
         String dicionario;
@@ -13,25 +12,17 @@ class Main
         dicionario = entrada.nextLine();
         char letra;
         int quantidade;
-        
         //System.out.println(dicionario);
-        
-        
         dicionario = dicionario.replace("{", " ");   //remove abertura de chaves
         dicionario = dicionario.replace("}", "");   //remove fechamento de chaves
-        
         //System.out.println(dicionario);
-        
         String[] values = dicionario.split(",");    //divide o dicionario por vírgulas
-        
         for (String value : values) //para cada letra e sua quantidade
         {
             letra = value.charAt(2);
             quantidade = Integer.valueOf(value.substring(6));
-            
             No no = new No(letra, quantidade);  //cria um novo no
             //System.out.println("<--" + letra + "," + quantidade + "-->");
-            
             Nos.add(no);
         }
         Nos.sort(new Comparator<No>()   //ordenando as letras de modo decrescente
@@ -47,7 +38,6 @@ class Main
             //System.out.println(no.letra+","+no.quantidade);
         }
     }
-    
     private static class FilaPrioridadeMinima
     {
         No[] nos; 
@@ -106,16 +96,32 @@ class Main
     private static class No
     {
         private char letra;
-        private int quantidade;
+        private int quantidade, soma = 0;
+        private No esq, dir;
         
+        
+        public void inserirEsq(No noEsq)
+        {
+            this.esq = noEsq;
+        }
+        public void inserirDir(No noDir)
+        {
+            this.dir = noDir;
+        }
         public No()
         {
-            
+            iniciarFilhos();
         }
         public No(char letra, int quantidade)
         {
             this.letra = letra;
             this.quantidade = quantidade;
+            iniciarFilhos();
+        }
+        private void iniciarFilhos()
+        {
+            esq = null;
+            dir = null;
         }
     }
 }
