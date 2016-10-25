@@ -1,13 +1,12 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import  java.util.Scanner;
 class Main
 {
     private static Scanner entrada = new Scanner(System.in);
     public static void main(String[] args)
     {
-        String dicionario;
-        ArrayList<No> Nos = new ArrayList();
+        String dicionario, codigo;
+        ArrayList<No> Nos = new ArrayList<>();
         dicionario = entrada.nextLine();
         char letra;
         int quantidade;
@@ -15,7 +14,7 @@ class Main
         dicionario = dicionario.replace("{", " ");   //remove abertura de chaves
         dicionario = dicionario.replace("}", "");   //remove fechamento de chaves
         //System.out.println(dicionario);
-        String[] values = dicionario.split(",");    //divide o dicionario por vírgulas
+        String[] values = dicionario.split(",");    //divide o dicionario por virgulas
         for (String value : values) //para cada letra e sua quantidade
         {
             letra = value.charAt(2);
@@ -26,15 +25,57 @@ class Main
         }
         //Nos.sort((No o1, No o2) -> (o1.quantidade > o2.quantidade)? 1 : 0); //ordenando as letras de modo decrescente
         FilaPrioridadeMinima fila = new FilaPrioridadeMinima(Nos.size());   //criacao da fila de prioridade 
-        Nos.stream().forEach((no) ->    //inserir cada no na fila
+        for(No no : Nos)
         {
+            //System.out.println("inseriu o " + no.letra);
             fila.Inserir(no);   //inserindo o no
-        }); //depois de inserir cada no na fila de prioridades
-        while(fila.getQuantidade() > 1)
+            //System.out.println("menor:"+fila.getMinimo());
+        }
+        while(fila.getQuantidade() > 1) //enquanto a fila nao tiver so 1 no
         {
             No no1 = fila.ExtrairMinimo();  //retira o primeiro menor
             No no2 = fila.ExtrairMinimo();  //retira o segundo menor
-            
+            No newNo = new No('*', no1.quantidade+no2.quantidade);  //cria um novo no com a soma dos 2 menores
+            newNo.esq = no1;    //adiciona o primeiro menor como filho a equerda
+            newNo.dir = no2;    //adiciona o segundo menor como filho a direita
+            //System.out.println("menor 1:" + no1.toString());
+            //System.out.println("menor 2:" + no2.toString());
+            fila.Inserir(newNo);    //insere o novo no na fila
+            //System.out.println("inseriu" + newNo.toString());
+        }
+        //return;
+        codigo = entrada.nextLine();
+        //System.out.println("codigo: " + codigo);
+        int i = 0;
+        No raiz, buscador;
+        raiz = fila.ExtrairMinimo();    //extrai o no raiz da arvore 
+        buscador = raiz;
+        /*
+        System.out.println("{arvore:");
+        System.out.println(buscador.toString());
+        System.out.println(buscador.esq.toString());
+        System.out.println(buscador.dir.toString());
+        System.out.println(buscador.dir.esq.toString());
+        System.out.println(buscador.dir.dir.toString());
+        System.out.println("}");
+        //*/
+        while(i < codigo.length())
+        {
+            //System.out.println("codigo: " +codigo.charAt(i));
+            if(codigo.charAt(i) == '1')
+            {
+                buscador = buscador.esq;
+            }
+            else
+            {
+                buscador = buscador.dir;
+            }
+            i++;
+            if(buscador.letra != '*')   //se for uma letra
+            {
+                System.out.print(buscador.letra);
+                buscador = raiz;
+            }
         }
     }
     private static class FilaPrioridadeMinima
@@ -50,28 +91,44 @@ class Main
         {
             return this.tamanho;
         }
+        public No getMinimo()
+        {
+            return nos[1];
+        }
         public No ExtrairMinimo()
         {
             No menor = nos[1];
             nos[1] = nos[tamanho];  //substitui a raiz pelo ultimo elemento
-            int i = 1;
+            int i = 1, minimo = 0;
             tamanho--;
-            while(nos[i].quantidade > nos[Esq(i)].quantidade || 
-                    nos[i].quantidade > nos[Dir(i)].quantidade) //enquanto o pai for maior que os filhos
+            
+            while(true)
             {
-                if(nos[Esq(i)].quantidade < nos[Dir(i)].quantidade)    //se o filho da esquerda for o menor
+                minimo = i;
+                if(Esq(i) <= tamanho)   //se nao passar o tamanho do heap
                 {
-                    No aux = nos[Esq(i)];
-                    nos[Esq(i)] = nos[i];   //troca o filho da esquerda pelo pai
-                    nos[i] = aux;   //troca o pai pelo filho da esquerda
-                    i = Esq(i);
+                    if(nos[Esq(i)].quantidade < nos[minimo].quantidade)
+                    {
+                        minimo = Esq(i);
+                    }
+                }     
+                if(Dir(i) <= tamanho)
+                {
+                    if(nos[Dir(i)].quantidade < nos[minimo].quantidade)
+                    {
+                        minimo = Dir(i);
+                    }
                 }
-                else    //se o da esquerda nao for o menor
+                if(minimo != i)
                 {
-                    No aux = nos[Dir(i)];
-                    nos[Dir(i)] = nos[i];   //troca o filho da direita pelo pai
-                    nos[i] = aux;   //troca o pai pelo filho da direita
-                    i = Dir(i);
+                    No aux = nos[minimo];
+                    nos[minimo] = nos[i];   //troca o menor filho pelo pai
+                    nos[i] = aux;   //troca o pai pelo filho da esquerda
+                    i = minimo;
+                }
+                else
+                {
+                    break;
                 }
             }
             return menor;
@@ -87,25 +144,23 @@ class Main
                 
                 //aux.letra = nos[Pai(tamanho)].letra;
                 //aux.quantidade = nos[Pai(tamanho)].quantidade;
-                while(nos[Pai(i)].quantidade > nos[i].quantidade && i != 0) 
+                while(nos[Pai(i)].quantidade > nos[i].quantidade) 
                 {
                     //nos[Pai(tamanho)].letra = nos[i].letra;
                     //nos[Pai(tamanho)].quantidade = nos[i].quantidade;
-                    No aux = nos[Pai(tamanho)];
-                    nos[Pai(tamanho)] = nos[i];
+                    No aux = nos[Pai(i)];
+                    nos[Pai(i)] = nos[i];
                     nos[i] = aux;
                     i = Pai(i);
+                    if(i < 2)
+                    {
+                        break;
+                    }
                 }
             }
         }
         
-        public void Show()
-        {
-            for(int i = 1 ; i <= tamanho ; i++)
-            {
-                
-            }
-        }
+       
         private int Pai(int i)
         {
             return Math.floorDiv(i, 2);
@@ -125,10 +180,42 @@ class Main
     private static class No
     {
         private char letra;
-        private int quantidade, soma = 0;
+        private int quantidade;
         private No esq, dir;
         
-        
+        @Override
+        public String toString()
+        {
+            String ret = "[letra:"+letra + ", quantidade:" + quantidade + ", esq:" ;
+            
+            if(esq != null)
+                ret += esq.toString();
+            else
+                ret += "null";
+            
+            ret+= ", dir:";
+            if(dir != null)
+                ret += dir.toString();
+            else
+                ret += "null";
+            
+            ret += "]";
+            return ret;
+        }
+        public No getCopia()
+        {
+            No no = new No(letra, quantidade);
+            
+            if(this.dir != null) 
+            {
+                no.dir = this.esq.getCopia();
+            }
+            if(this.esq != null) 
+            {
+                no.esq = this.esq.getCopia();
+            }
+            return no;
+        }
         public void inserirEsq(No noEsq)
         {
             this.esq = noEsq;
